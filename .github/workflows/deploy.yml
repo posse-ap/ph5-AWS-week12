@@ -2,11 +2,11 @@ name: Deploy AWS
 on:
   push:
     branches:
-      - main
+      - deploy_test
 env:
-  ROLE_TO_ASSUME: arn:aws:iam::794121341683:role/GithubActionsRole
-  FRONT_BACKET_NAME: front.prod.saikan.community
-  CLOUDFRONT_ID: E35J5WBH07UAWV
+  ROLE_TO_ASSUME: arn:aws:iam::207095571838:role/GithubActionsRole
+  FRONT_BACKET_NAME: ph5aws-silent-web
+  CLOUDFRONT_ID: E3D2X7GTFZ0JCS
 jobs:
   deploy:
     name: Deploy

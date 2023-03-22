@@ -5,7 +5,6 @@ on:
       - feature/deploy_test
 env:
   SERVICE_NAME: saikan
-  ENV_NAME: prod
   ROLE_TO_ASSUME: arn:aws:iam::207095571838:role/GithubActionsRole
 jobs:
   deploy:

@@ -55,31 +55,31 @@ jobs:
           docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
           echo "::set-output name=image::${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
 
-      # - name: Get ECS Task Definition
-      #   id: create-taskdef
-      #   run: |
-      #     aws ecs describe-task-definition --task-definition ${{ env.SERVICE_NAME }}_${{ env.ENV_NAME }} | jq ".taskDefinition" | jq "del(.compatibilities)" | jq "del(.taskDefinitionArn)" | jq "del(.requiresAttributes)" | jq "del(.revision)" | jq "del(.status)" > ./task_definition.json
+      - name: Get ECS Task Definition
+        id: create-taskdef
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.SERVICE_NAME }} | jq ".taskDefinition" | jq "del(.compatibilities)" | jq "del(.taskDefinitionArn)" | jq "del(.requiresAttributes)" | jq "del(.revision)" | jq "del(.status)" > ./task_definition.json
 
-      # - name: Fill in the new image ID Web
-      #   id: task-def-web
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ./task_definition.json
-      #     container-name: ${{ env.SERVICE_NAME }}_${{ env.ENV_NAME }}
-      #     image: ${{ steps.build-web.outputs.image }}
+      - name: Fill in the new image ID Web
+        id: task-def-web
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./task_definition.json
+          container-name: ${{ env.SERVICE_NAME }}_web
+          image: ${{ steps.build-web.outputs.image }}
 
-      # - name: Fill in the new image ID App
-      #   id: task-def-app
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ${{ steps.task-def-web.outputs.task-definition }}
-      #     container-name: ${{ env.SERVICE_NAME }}_${{ env.ENV_NAME }}_app
-      #     image: ${{ steps.build-app.outputs.image }}
+      - name: Fill in the new image ID App
+        id: task-def-app
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-web.outputs.task-definition }}
+          container-name: ${{ env.SERVICE_NAME }}_phpfpm
+          image: ${{ steps.build-app.outputs.image }}
 
-      # - name: Deploy Amazon ECS
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     task-definition: ${{ steps.task-def-app.outputs.task-definition }}
-      #     service: ${{ env.SERVICE_NAME }}_${{ env.ENV_NAME }}
-      #     cluster: ${{ env.SERVICE_NAME }}-${{ env.ENV_NAME }}
-      #     wait-for-service-stability: true
+      - name: Deploy Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-app.outputs.task-definition }}
+          service: ${{ env.SERVICE_NAME }}
+          cluster: ${{ env.SERVICE_NAME }}
+          wait-for-service-stability: true

@@ -4,7 +4,7 @@ on:
     branches:
       - feature/deploy_test
 env:
-  SERVICE_NAME: saikan
+  SERVICE_NAME: ph5aws
   ROLE_TO_ASSUME: arn:aws:iam::207095571838:role/GithubActionsRole
 jobs:
   deploy:
